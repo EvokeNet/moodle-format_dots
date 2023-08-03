@@ -1,0 +1,46 @@
+body.format-dots .sections-dots .iconsection,
+body.format-dots .sections-dots .children {
+    display: flex;
+    justify-content: center;
+}
+
+body.format-dots .sections-dots .iconsection {
+    margin: 1rem;
+}
+
+body.format-dots .iconsection a {
+    text-align: center;
+}
+
+body.format-dots .iconsection a:hover {
+    text-decoration: none;
+}
+
+body.format-dots .iconsection .icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    transition: all .5s;
+}
+
+body.format-dots .iconsection .icon i.fa {
+    font-size: 32px;
+}
+
+body.format-dots .iconsection p {
+    font-size: 1.171875rem;
+}
+
+body.format-dots .iconsection .icon:hover {
+    filter: grayscale(.4);
+}
+
+body.format-dots .children .iconsection .icon {
+    width: 92px;
+    height: 92px;
+}
