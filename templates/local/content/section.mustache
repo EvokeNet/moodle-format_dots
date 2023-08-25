@@ -89,11 +89,31 @@
 
 <div class="section-{{num}} iconsection">
     <a href="{{{url}}}">
-        <div class="d-flex flex-column align-items-center">
-            <div class="icon" style="background-color: {{color}}">
-                <i class="fa {{icon}}"></i>
+        <div class="card">
+            {{#hasimage}}
+                <img src="{{image}}" alt="{{title}}" class="img-responsive">
+            {{/hasimage}}
+            {{^hasimage}}
+                <div class="icon" style="background-color: {{color}}">
+                    <i class="fa {{icon}}"></i>
+                </div>
+            {{/hasimage}}
+
+            {{#progress}}
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{progress}}%;" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100">{{progress}}%</div>
+                </div>
+            {{/progress}}
+
+            <div class="card-body">
+                <p class="mb-0">{{title}}</p>
+
+                {{#progress}}
+                    <div class="status">
+                        <p>Total activities: {{modulescount}}</p>
+                    </div>
+                {{/progress}}
             </div>
-            <p class="mb-0">{{title}}</p>
         </div>
     </a>
 </div>

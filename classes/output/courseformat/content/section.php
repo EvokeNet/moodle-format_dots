@@ -37,6 +37,26 @@ class section extends section_base {
 
         $data->sectionformatoptions = $format->get_format_options($this->section);
 
+        $data->progress = $this->get_section_progress($format, $output);
+
         return $data;
+    }
+
+    protected function get_section_progress($format, $output) {
+        $cmsummary = new $this->cmsummaryclass($format, $this->section);
+
+        $cmsummary = $cmsummary->export_for_template($output);
+
+        if (!isset($cmsummary->total) || $cmsummary->total === 0) {
+            return [
+                'modulescount' => isset($cmsummary->mods) ? count($cmsummary->mods) : 0,
+                'progress' => 0
+            ];
+        }
+
+        return [
+            'modulescount' => count($cmsummary->mods),
+            'progress' => (int) ($cmsummary->complete * 100 / $cmsummary->total)
+        ];
     }
 }

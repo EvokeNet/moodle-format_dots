@@ -108,6 +108,8 @@ class content extends content_base {
             $section->icon = $section->sectionformatoptions['sectionicon'];
             $section->color = $section->sectionformatoptions['sectioncolor'];
             $section->title = $section->header->title;
+            $section->image = $this->get_section_image($course, $section->id);
+            $section->hasimage = $section->image !== false;
 
             $section->ischildren = false;
 
@@ -120,6 +122,24 @@ class content extends content_base {
         }
 
         return array_values($sections);
+    }
+
+    /**
+     * Recover background url to section
+     *
+     * @param $section
+     * @return string
+     * @throws \dml_exception
+     * @throws \coding_exception
+     */
+    protected function get_section_image($course, $sectionid) {
+        $file = format_dots_get_file('sectionimage' . $sectionid, $course);
+
+        if (!$file) {
+            return false;
+        }
+
+        return \moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
     }
 
     /**

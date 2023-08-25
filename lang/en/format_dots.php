@@ -18,6 +18,9 @@ $string['privacy:metadata'] = 'The Topics format plugin does not store any perso
 $string['addsubtopic'] = 'Add subtopic';
 $string['sectionicon'] = 'Section icon';
 $string['sectioncolor'] = 'Section color';
+$string['sectionimage'] = 'Section image';
+$string['sectionimageimagecurrent'] = 'Current image';
+$string['sectionimageimagedelete'] = 'Delete current image';
 
 $string['gray'] = 'Gray';
 $string['blue'] = 'Blue';

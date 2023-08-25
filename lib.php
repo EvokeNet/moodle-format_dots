@@ -271,7 +271,8 @@ class format_dots extends core_courseformat\base {
      * @return array array of references to the added form elements.
      */
     public function create_edit_form_elements(&$mform, $forsection = false) {
-        global $COURSE;
+        global $COURSE, $PAGE;
+
         $elements = parent::create_edit_form_elements($mform, $forsection);
 
         if (!$forsection && (empty($COURSE->id) || $COURSE->id == SITEID)) {
@@ -287,6 +288,20 @@ class format_dots extends core_courseformat\base {
                 $mform->setDefault('numsections', $courseconfig->numsections);
             }
             array_unshift($elements, $element);
+        }
+
+        if ($forsection && $mform->elementExists('sectionimage')) {
+            $sectionid = $PAGE->url->get_param('id');
+            $filearea = 'sectionimage' . $sectionid;
+            $file = format_dots_get_file($filearea, $this->course);
+            if($file) {
+                $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
+                $img = html_writer::img($url, $file->get_filename(),array('style' => 'width: 50%;'));
+                $newitems = array();
+                $newitems[] = $mform->createElement('static', 'currentsectionimage', get_string('sectionimageimagecurrent', 'format_dots'), $img);
+                $newitems[] = $mform->createElement('checkbox', 'deletesectionimage', get_string('sectionimageimagedelete', 'format_dots'));
+                array_splice($mform->_elements, 7, 0, $newitems);
+            }
         }
 
         return $elements;
@@ -317,6 +332,40 @@ class format_dots extends core_courseformat\base {
             }
         }
         return $this->update_format_options($data);
+    }
+
+    /**
+     * Handle the sections form before saving data and files
+     *
+     * @param array $data
+     * @return bool
+     * @throws coding_exception
+     */
+    public function update_section_format_options($data) {
+        global $PAGE, $USER;
+
+        $courseid = $PAGE->course->id;
+        $sectionid = $data['id'];
+        $fs = get_file_storage();
+        $filearea = 'sectionimage' . $sectionid;
+        $context = \context_course::instance($courseid);
+        $usercontext = \context_user::instance($USER->id);
+
+        // Must delete actual background image.
+        if (array_key_exists('deletesectionimage', $data) && $data['deletesectionimage'] == 1) {
+            $fs->delete_area_files($context->id, 'format_dots', $filearea);
+        }
+
+        $sectionimage = file_get_submitted_draft_itemid('sectionimage');
+        // Only updates if some file is uploaded.
+        if ($fareafiles = file_get_all_files_in_draftarea($sectionimage)){
+            file_save_draft_area_files($sectionimage, $context->id, 'format_dots', $filearea, 0);
+        }
+
+        // Clean-up user draft area after saving files.
+        $fs->delete_area_files($usercontext->id, 'user', 'draft', $sectionimage);
+
+        return parent::update_section_format_options($data);
     }
 
     /**
@@ -644,7 +693,21 @@ class format_dots extends core_courseformat\base {
                 'default' => 'fa-home',
                 'cache' => true,
                 'cachedefault' => 'fa-home',
-            ]
+            ],
+            'sectionimage' => [
+                'type' => PARAM_FILE,
+                'label' => get_string('sectionimage', 'format_dots'),
+                'element_type' => 'filemanager',
+                'element_attributes' => [null,
+                    [
+                        'subdirs' => false,
+                        'maxfiles' => 1,
+                        'accepted_types' => ['.jpg', '.png'],
+                        'maxbytes' => 512000,
+                        'areamaxbytes' => 512000
+                    ]
+                ],
+            ],
         ];
     }
 }
@@ -666,4 +729,70 @@ function format_dots_inplace_editable($itemtype, $itemid, $newvalue) {
             [$itemid, 'dots'], MUST_EXIST);
         return course_get_format($section->course)->inplace_editable_update_section_name($section, $itemtype, $newvalue);
     }
+}
+
+/**
+ * Serve files for the plugin
+ *
+ * @param $course
+ * @param $cm
+ * @param $context
+ * @param $filearea
+ * @param $args
+ * @param $forcedownload
+ * @param array $options
+ * @throws coding_exception
+ */
+function format_dots_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    // Default params.
+    $itemid = $args[0];
+    $filter = 0;
+    $forcedownload = true;
+
+    if (array_key_exists('filter', $options)) {
+        $filter = $options['filter'];
+    }
+
+    // Recover file and stored_file objects.
+    $file = format_dots_get_file($filearea, $course);
+
+    if (is_null($file)) {
+        send_file_not_found();
+    }
+
+    $fs = get_file_storage();
+    $storedfile = $fs->get_file_by_hash($file->get_pathnamehash());
+
+    if (!$storedfile) {
+        send_file_not_found();
+    }
+
+    if (strpos($filearea, 'sectionimage') !== false) {
+        send_stored_file($storedfile, 86400, $filter, $forcedownload, $options);
+    }
+}
+
+/**
+ * Get a course related file
+ *
+ * @param $filearea
+ * @param $course
+ * @return bool|stored_file File object or false if file not exists
+ * @throws coding_exception
+ */
+function format_dots_get_file($filearea, $course) {
+    global $CFG, $DB;
+
+    require_once($CFG->libdir. '/filestorage/file_storage.php');
+    require_once($CFG->dirroot. '/course/lib.php');
+    $fs = get_file_storage();
+    $context = context_course::instance($course->id);
+    $files = $fs->get_area_files($context->id, 'format_dots', $filearea, 0, 'filename', false);
+    if (count($files)) {
+        foreach ($files as $entry) {
+            $file = $fs->get_file($context->id, 'format_dots', $filearea, 0, $entry->get_filepath(), $entry->get_filename());
+            return $file;
+        }
+    }
+    return false;
 }
