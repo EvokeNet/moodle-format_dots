@@ -112,10 +112,13 @@ class content extends content_base {
             $section->hasimage = $section->image !== false;
 
             $section->ischildren = false;
+            $section->haschildren = false;
 
             if (isset($section->sectionformatoptions['parent']) && $section->sectionformatoptions['parent'] >= 0) {
                 $section->ischildren = true;
                 $sections[$section->sectionformatoptions['parent']]->children[] = $section;
+
+                $sections[$section->sectionformatoptions['parent']]->haschildren = true;
 
                 unset($sections[$key]);
             }

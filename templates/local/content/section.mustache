@@ -87,32 +87,40 @@
     }
 }}
 
-<div class="section-{{num}} iconsection">
+<div class="section-{{num}} iconsection {{#haschildren}} haschildren-{{num}} {{/haschildren}}">
     <a href="{{{url}}}">
-        <div class="card">
-            {{#hasimage}}
-                <img src="{{image}}" alt="{{title}}" class="img-responsive">
-            {{/hasimage}}
-            {{^hasimage}}
-                <div class="icon" style="background-color: {{color}}">
-                    <i class="fa {{icon}}"></i>
-                </div>
-            {{/hasimage}}
-
+        <div class="content">
             {{#progress}}
-                <div class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{progress}}%;" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100">{{progress}}%</div>
-                </div>
-            {{/progress}}
-
-            <div class="card-body">
-                <p class="mb-0">{{title}}</p>
-
                 {{#progress}}
-                    <div class="status">
-                        <p>Total activities: {{modulescount}}</p>
+                    <div class="progress">
+                        <span class="progress-left">
+                            <span class="progress-bar" {{#animationleft}}style="animation: loading-{{progress}} .3s linear forwards .5s;"{{/animationleft}}></span>
+                        </span>
+                        <span class="progress-right">
+                            <span class="progress-bar"
+                                  {{#animationleft}}style="animation: loading .5s linear forwards;"{{/animationleft}}
+                                  {{#animationright}}style="animation: loading-{{progress}} .5s linear forwards;"{{/animationright}}>
+                            </span>
+                        </span>
                     </div>
                 {{/progress}}
+                <div class="info" data-html="true" data-toggle="tooltip" title="<b>{{modulescount}}</b> activities{{#progress}}<br><b>{{.}}%</b> complete{{/progress}}">
+                    <i class="fa fa-info"></i>
+                </div>
+            {{/progress}}
+            <div class="image">
+                {{#hasimage}}
+                    <img src="{{image}}" alt="{{title}}" class="img-responsive">
+                {{/hasimage}}
+                {{^hasimage}}
+                    <div class="icon" style="background-color: {{color}}">
+                        <i class="fa {{icon}}"></i>
+                    </div>
+                {{/hasimage}}
+            </div>
+
+            <div class="details mt-2">
+                <p class="mb-0">{{title}}</p>
             </div>
         </div>
     </a>

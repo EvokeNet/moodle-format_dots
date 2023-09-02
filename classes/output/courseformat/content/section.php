@@ -49,14 +49,28 @@ class section extends section_base {
 
         if (!isset($cmsummary->total) || $cmsummary->total === 0) {
             return [
-                'modulescount' => isset($cmsummary->mods) ? count($cmsummary->mods) : 0,
+                'modulescount' => isset($cmsummary->mods) ? $this->get_total_activities($cmsummary->mods) : 0,
                 'progress' => 0
             ];
         }
 
+        $progress = (int) ($cmsummary->complete * 100 / $cmsummary->total);
+
         return [
-            'modulescount' => count($cmsummary->mods),
-            'progress' => (int) ($cmsummary->complete * 100 / $cmsummary->total)
+            'modulescount' => $this->get_total_activities($cmsummary->mods),
+            'progress' => $progress,
+            'animationleft' => $progress > 50,
+            'animationright' => $progress <= 50,
         ];
+    }
+
+    private function get_total_activities($mods) {
+        $total = 0;
+
+        foreach ($mods as $mod) {
+            $total += $mod['count'];
+        }
+
+        return $total;
     }
 }

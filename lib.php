@@ -702,9 +702,7 @@ class format_dots extends core_courseformat\base {
                     [
                         'subdirs' => false,
                         'maxfiles' => 1,
-                        'accepted_types' => ['.jpg', '.png'],
-                        'maxbytes' => 512000,
-                        'areamaxbytes' => 512000
+                        'accepted_types' => ['.jpg', '.png']
                     ]
                 ],
             ],
