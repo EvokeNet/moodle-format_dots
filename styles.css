@@ -8,7 +8,29 @@ body.format-dots .sections-dots .iconsection {
     margin: 1rem;
 }
 
-body.format-dots .iconsection a {
+body.format-dots .sections-dots .iconsection.restrictionlock .content .image {
+    position: relative;
+}
+
+body.format-dots .sections-dots .iconsection.restrictionlock .content .image::after {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    content: "\f023";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, .6);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+}
+
+body.format-dots .iconsection {
     text-align: center;
 }
 
@@ -66,16 +88,25 @@ body.format-dots .sections-dots .iconsection .content {
     position: relative;
 }
 
-body.format-dots .sections-dots .iconsection .content .info {
+body.format-dots .sections-dots .iconsection .content .info,
+body.format-dots .sections-dots .iconsection .content .availability {
     position: absolute;
-    right: 0;
-    top: 0;
     width: 24px;
     height: 24px;
     color: #fff;
     border-radius: 50%;
+    z-index: 1000;
+    right: 0;
+}
+
+body.format-dots .sections-dots .iconsection .content .info {
+    top: 0;
     background-color: #fdba04;
-    z-index: 3000;
+}
+
+body.format-dots .sections-dots .iconsection .content .availability {
+    top: 30px;
+    background-color: #0f47ad;
 }
 
 body.format-dots .sections-dots .progress {
@@ -100,7 +131,7 @@ body.format-dots .sections-dots .progress:after {
     top: 0;
     left: 0;
 }
-body.format-dots .sections-dots .progress>span {
+body.format-dots .sections-dots .progress > span {
     width: 50%;
     height: 100%;
     overflow: hidden;
