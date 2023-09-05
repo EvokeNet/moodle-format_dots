@@ -22,7 +22,7 @@ body.format-dots .sections-dots .iconsection.restrictionlock .content .image::af
     bottom: 0;
     left: 0;
     background-color: rgba(0, 0, 0, .6);
-    color: #fff;
+    color: #ddd;
     border-radius: 50%;
     display: flex;
     align-items: center;
