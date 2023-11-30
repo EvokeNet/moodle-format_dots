@@ -87,9 +87,11 @@
     }
 }}
 
+<div id="connect-section-{{num}}" class="connect-sections"></div>
 <div
         id="section-{{num}}"
-        class="section-{{num}} iconsection {{#restrictionlock}}restrictionlock{{/restrictionlock}} {{#haschildren}} haschildren-{{num}} {{/haschildren}}"
+        class="section-{{num}} iconsection {{#restrictionlock}}restrictionlock{{/restrictionlock}} subsection"
+        data-parent="{{parent}}" data-sectionnum="{{num}}"
         {{#hasavailability}}
                 data-html="true" data-toggle="tooltip" data-placement="bottom"
                 title='{{#availability}}

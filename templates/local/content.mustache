@@ -155,9 +155,9 @@
 
                 <div class="children">
                     {{#children}}
-                        {{$ format_dots/local/content/section }}
-                            {{> format_dots/local/content/section }}
-                        {{/ format_dots/local/content/section }}
+                        {{$ format_dots/local/content/subsection }}
+                            {{> format_dots/local/content/subsection }}
+                        {{/ format_dots/local/content/subsection }}
                     {{/children}}
                 </div>
             {{/sections}}
@@ -210,7 +210,21 @@
     {{/editingmode}}
 </div>
 {{#js}}
-    require(['core_courseformat/local/content'], function(component) {
+    require(['core_courseformat/local/content', 'jquery', 'format_dots/connections'], function(component, $, connections) {
         component.init('course-format-{{uniqid}}', {}, {{sectionreturn}});
+
+        $('.subsection').each(function(index) {
+            let section = $(this).attr('id');
+
+            let parent = 'section-' + $(this).data('parent');
+
+            let line = 'connect-section-' + $(this).data('sectionnum');
+
+            connections.adjustLine(
+                document.getElementById(parent),
+                document.getElementById(section),
+                document.getElementById(line)
+            );
+        });
     });
 {{/js}}

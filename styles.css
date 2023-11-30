@@ -83,9 +83,17 @@ body.format-dots .sections-dots .iconsection .content .details {
     padding: .25rem .5rem;
 }
 
+body.format-dots .sections-dots .connect-sections {
+    position: absolute;
+    width: 4px;
+    margin-top: -1px;
+    background-color: rgba(15, 71, 173, 0.6);
+}
+
 /* Progress */
 body.format-dots .sections-dots .iconsection .content {
     position: relative;
+    z-index: 1;
 }
 
 body.format-dots .sections-dots .iconsection .content .info,
