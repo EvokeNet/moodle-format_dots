@@ -114,7 +114,7 @@ class content extends content_base {
             $section->ischildren = false;
             $section->haschildren = false;
 
-            if (isset($section->sectionformatoptions['parent']) && $section->sectionformatoptions['parent'] >= 0) {
+            if (isset($section->sectionformatoptions['parent']) && $section->sectionformatoptions['parent'] >= 0 && isset($sections[$section->sectionformatoptions['parent']]))  {
                 $section->ischildren = true;
                 $section->parent = $sections[$section->sectionformatoptions['parent']]->num;
                 $sections[$section->sectionformatoptions['parent']]->children[] = $section;
