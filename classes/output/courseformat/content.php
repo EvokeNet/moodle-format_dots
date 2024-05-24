@@ -108,7 +108,7 @@ class content extends content_base {
             $section->icon = $section->sectionformatoptions['sectionicon'];
             $section->color = $section->sectionformatoptions['sectioncolor'];
             $section->title = $section->header->title;
-            $section->image = $this->get_section_image($course, $section->id);
+            $section->image = $this->get_section_image($course->id, $section->id);
             $section->hasimage = $section->image !== false;
 
             $section->ischildren = false;
@@ -131,13 +131,14 @@ class content extends content_base {
     /**
      * Recover background url to section
      *
-     * @param $section
+     * @param $courseid
+     * @param $sectionid
      * @return string
      * @throws \dml_exception
      * @throws \coding_exception
      */
-    protected function get_section_image($course, $sectionid) {
-        $file = format_dots_get_file('sectionimage' . $sectionid, $course);
+    protected function get_section_image($courseid, $sectionid) {
+        $file = format_dots_get_file('sectionimage', $sectionid, $courseid);
 
         if (!$file) {
             return false;

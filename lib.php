@@ -292,8 +292,8 @@ class format_dots extends core_courseformat\base {
 
         if ($forsection && $mform->elementExists('sectionimage')) {
             $sectionid = $PAGE->url->get_param('id');
-            $filearea = 'sectionimage' . $sectionid;
-            $file = format_dots_get_file($filearea, $this->course);
+
+            $file = format_dots_get_file('sectionimage', $sectionid, $this->course->id);
             if($file) {
                 $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
                 $img = html_writer::img($url, $file->get_filename(),array('style' => 'width: 50%;'));
@@ -347,19 +347,19 @@ class format_dots extends core_courseformat\base {
         $courseid = $PAGE->course->id;
         $sectionid = $data['id'];
         $fs = get_file_storage();
-        $filearea = 'sectionimage' . $sectionid;
+        $filearea = 'sectionimage';
         $context = \context_course::instance($courseid);
         $usercontext = \context_user::instance($USER->id);
 
         // Must delete actual background image.
         if (array_key_exists('deletesectionimage', $data) && $data['deletesectionimage'] == 1) {
-            $fs->delete_area_files($context->id, 'format_dots', $filearea);
+            $fs->delete_area_files($context->id, 'format_dots', $filearea, $sectionid);
         }
 
         $sectionimage = file_get_submitted_draft_itemid('sectionimage');
         // Only updates if some file is uploaded.
         if ($fareafiles = file_get_all_files_in_draftarea($sectionimage)){
-            file_save_draft_area_files($sectionimage, $context->id, 'format_dots', $filearea, 0);
+            file_save_draft_area_files($sectionimage, $context->id, 'format_dots', $filearea, $sectionid);
         }
 
         // Clean-up user draft area after saving files.
@@ -752,7 +752,7 @@ function format_dots_pluginfile($course, $cm, $context, $filearea, $args, $force
     }
 
     // Recover file and stored_file objects.
-    $file = format_dots_get_file($filearea, $course);
+    $file = format_dots_get_file($filearea, $itemid, $course->id);
 
     if (is_null($file)) {
         send_file_not_found();
@@ -765,7 +765,7 @@ function format_dots_pluginfile($course, $cm, $context, $filearea, $args, $force
         send_file_not_found();
     }
 
-    if (strpos($filearea, 'sectionimage') !== false) {
+    if ($filearea == 'sectionimage') {
         send_stored_file($storedfile, 86400, $filter, $forcedownload, $options);
     }
 }
@@ -774,21 +774,21 @@ function format_dots_pluginfile($course, $cm, $context, $filearea, $args, $force
  * Get a course related file
  *
  * @param $filearea
- * @param $course
+ * @param $courseid
  * @return bool|stored_file File object or false if file not exists
  * @throws coding_exception
  */
-function format_dots_get_file($filearea, $course) {
+function format_dots_get_file($filearea, $itemid, $courseid) {
     global $CFG, $DB;
 
     require_once($CFG->libdir. '/filestorage/file_storage.php');
     require_once($CFG->dirroot. '/course/lib.php');
     $fs = get_file_storage();
-    $context = context_course::instance($course->id);
-    $files = $fs->get_area_files($context->id, 'format_dots', $filearea, 0, 'filename', false);
+    $context = context_course::instance($courseid);
+    $files = $fs->get_area_files($context->id, 'format_dots', $filearea, $itemid, 'filename', false);
     if (count($files)) {
         foreach ($files as $entry) {
-            $file = $fs->get_file($context->id, 'format_dots', $filearea, 0, $entry->get_filepath(), $entry->get_filename());
+            $file = $fs->get_file($context->id, 'format_dots', $filearea, $itemid, $entry->get_filepath(), $entry->get_filename());
             return $file;
         }
     }
