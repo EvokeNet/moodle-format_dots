@@ -59,6 +59,7 @@ class section extends section_base {
         return [
             'modulescount' => $this->get_total_activities($cmsummary->mods),
             'progress' => $progress,
+            'progresscomplete' => $progress == 100,
             'animationleft' => $progress > 50,
             'animationright' => $progress <= 50,
         ];

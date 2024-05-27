@@ -99,7 +99,7 @@
                     {{/availability}}'
         {{/hasavailability}}>
     {{^restrictionlock}}<a href="{{{url}}}">{{/restrictionlock}}
-        <div class="content">
+        <div class="content {{#progress.progresscomplete}}progresscomplete{{/progress.progresscomplete}}">
             {{#progress}}
                 {{#progress}}
                     <div class="progress">
@@ -115,7 +115,12 @@
                     </div>
                 {{/progress}}
                 <div class="info" data-html="true" data-toggle="tooltip" title="<b>{{modulescount}}</b> activities{{#progress}}<br><b>{{.}}%</b> complete{{/progress}}">
-                    <i class="fa fa-info"></i>
+                    {{#progresscomplete}}
+                        <i class="fa fa-check"></i>
+                    {{/progresscomplete}}
+                    {{^progresscomplete}}
+                        <i class="fa fa-info"></i>
+                    {{/progresscomplete}}
                 </div>
             {{/progress}}
 

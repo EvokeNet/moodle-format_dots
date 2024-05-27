@@ -112,6 +112,14 @@ body.format-dots .sections-dots .iconsection .content .info {
     background-color: #fdba04;
 }
 
+body.format-dots .sections-dots .iconsection.subsection .content .info {
+    top: -10px;
+}
+
+body.format-dots .sections-dots .iconsection .content.progresscomplete .info {
+    background-color: #64a44e;
+}
+
 body.format-dots .sections-dots .iconsection .content .availability {
     top: 30px;
     background-color: #0f47ad;
@@ -159,6 +167,9 @@ body.format-dots .sections-dots .progress .progress-bar {
     position: absolute;
     top: 0;
     border-color: #fdba04;
+}
+body.format-dots .sections-dots .progresscomplete .progress .progress-bar {
+    border-color: #64a44e;
 }
 body.format-dots .sections-dots .progress .progress-left .progress-bar {
     left: 100%;
