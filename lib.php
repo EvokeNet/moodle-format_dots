@@ -304,6 +304,20 @@ class format_dots extends core_courseformat\base {
             }
         }
 
+        if ($forsection && $mform->elementExists('parent')) {
+            if ($sections = $this->get_toplevel_sections($COURSE->id, $sectionid)) {
+                $parent = $mform->getElement('parent');
+
+                foreach ($sections as $key => $section) {
+                    $parent->addOption($section, $key);
+                }
+            }
+
+            if ($hasparent = $this->has_parent($sectionid)) {
+                $mform->setDefault('parent', $hasparent);
+            }
+        }
+
         return $elements;
     }
 
@@ -660,11 +674,12 @@ class format_dots extends core_courseformat\base {
         return [
             'parent' => [
                 'type' => PARAM_INT,
-                'label' => '',
-                'element_type' => 'hidden',
-                'default' => -1,
+                'label' => get_string('parentsection', 'format_dots'),
                 'cache' => true,
-                'cachedefault' => -1,
+                'cachedefault' => '-1',
+                'element_type' => 'select',
+                'element_attributes' => [],
+                'default' => '-1',
             ],
             'sectioncolor' => [
                 'type' => PARAM_TEXT,
@@ -707,6 +722,102 @@ class format_dots extends core_courseformat\base {
                 ],
             ],
         ];
+    }
+
+    /**
+     * Get sections that are not children of other section
+     *
+     * @param $courseid
+     * @param $sectionid
+     * @return array|string[]
+     * @throws dml_exception
+     */
+    protected function get_toplevel_sections($courseid, $sectionid = null) {
+        global $DB;
+
+        $sql = "SELECT * FROM {course_sections} s
+                WHERE course = :course
+                AND s.id NOT IN (
+                    SELECT sectionid FROM {course_format_options}
+                    WHERE courseid = :courseid
+                    AND name = 'parent'
+                    AND value >= :sectionnum)";
+
+        $params = ['course' => $courseid, 'courseid' => $courseid, 'sectionnum' => 0];
+
+        if ($sectionid) {
+            $sql .= " AND s.id <> :sectionid";
+
+            $params['sectionid'] = $sectionid;
+        }
+
+        $records = $DB->get_records_sql($sql, $params);
+
+        if (!$records) {
+            return [];
+        }
+
+        $data = ['-1' => ''];
+        foreach ($records as $record) {
+            $data[$record->section] = $this->get_section_name($record->section);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Returns if a section has a parent
+     *
+     * @param $sectionid
+     * @return false
+     * @throws \dml_exception
+     */
+    protected function has_parent($sectionid) {
+        global $DB;
+
+        $sectionoptions = $DB->get_record('course_format_options', ['sectionid' => $sectionid, 'name' => 'parent']);
+
+        if (!$sectionoptions) {
+            return false;
+        }
+
+        if ($sectionoptions->value == -1) {
+            return false;
+        }
+
+        return $sectionoptions->value;
+    }
+
+    /**
+     * Prepares values of course or section format options before storing them in DB
+     *
+     * If an option has invalid value it is not returned
+     *
+     * @param array $rawdata associative array of the proposed course/section format options
+     * @param int|null $sectionid null if it is course format option
+     * @return array array of options that have valid values
+     */
+    protected function validate_format_options(array $rawdata, int $sectionid = null): array {
+        if (!$sectionid) {
+            $allformatoptions = $this->course_format_options(true);
+        } else {
+            $allformatoptions = $this->section_format_options(true);
+        }
+        $data = array_intersect_key($rawdata, $allformatoptions);
+        foreach ($data as $key => $value) {
+            $option = $allformatoptions[$key] + ['type' => PARAM_RAW, 'element_type' => null, 'element_attributes' => [[]]];
+            expand_value($data, $data, $option, $key);
+
+            if ($option['element_type'] === 'select' && $key == 'parent') {
+                continue;
+            }
+
+            if ($option['element_type'] === 'select' && !array_key_exists($data[$key], $option['element_attributes'][0])) {
+                // Value invalid for select element, skip.
+                unset($data[$key]);
+            }
+        }
+        return $data;
     }
 }
 

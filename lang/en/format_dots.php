@@ -35,3 +35,5 @@ $string['portfolios'] = 'Explore Portfolios';
 $string['portfolios_help'] = 'Add here course\'s Explore Portfolios link';
 $string['evokation'] = 'Evokation';
 $string['evokation_help'] = 'Add here course\'s Evokation link';
+
+$string['parentsection'] = 'Parent section';
